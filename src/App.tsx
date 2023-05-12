@@ -1,19 +1,21 @@
 /* eslint-disable react/jsx-no-constructed-context-values */
 import React from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
 
 import GlobalStyle from './styles/global';
-import SignIn from './pages/SignIn';
+
 import { AppProvider } from './hooks';
-// import SignUp from './pages/SignUp';
+
+import { Routes } from './routes';
 
 const App: React.FC = () => (
-  <>
+  <Router>
     <AppProvider>
-      <SignIn />
+      <Routes />
     </AppProvider>
 
     <GlobalStyle />
-  </>
+  </Router>
 );
 
 export default App;
