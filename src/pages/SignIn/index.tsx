@@ -12,10 +12,11 @@ import logoImg from '../../assets/logo.svg';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 
-import { AuthContext } from '../../hooks/AuthContext';
+import { AuthContext } from '../../hooks/auth';
 
 import { Background, Container, Content } from './styles';
 import getValidationErrors from '../../utils/getValidationErrors';
+import { ToastContext } from '../../hooks/toast';
 
 interface SignInFormData {
   email: string;
@@ -25,9 +26,8 @@ interface SignInFormData {
 const SignIn: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
 
-  const { user, signIn } = useContext(AuthContext);
-
-  console.log(user);
+  const { signIn } = useContext(AuthContext);
+  const { createToast } = useContext(ToastContext);
 
   const handleSubmit = useCallback(async (data: SignInFormData) => {
     try {
@@ -42,15 +42,23 @@ const SignIn: React.FC = () => {
         abortEarly: false,
       });
 
-      signIn({
+      await signIn({
         email: data.email,
         password: data.password,
       });
     } catch (err: any) {
-      const errors = getValidationErrors(err);
-      formRef.current?.setErrors(errors);
+      if (err instanceof Yup.ValidationError) {
+        const errors = getValidationErrors(err);
+        formRef.current?.setErrors(errors);
+      }
+
+      createToast({
+        title: 'Erro na autenticação',
+        type: 'error',
+        description: 'Ocorreu um erro ao fazer login verificar credenciais',
+      });
     }
-  }, [signIn]);
+  }, [signIn, createToast]);
 
   return (
     <Container>
